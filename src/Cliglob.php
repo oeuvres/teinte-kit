@@ -18,7 +18,7 @@ class Cliglob
     /** Options */
     protected static $options = [];
     /** Files */
-    protected static $globs;
+    protected static $globs = [];
 
     /**
      * Get an option
@@ -53,7 +53,12 @@ class Cliglob
     public static function args()
     {
         global $argv;
-        if (isset(self::$globs)) return; 
+        if (isset(self::$options['v'])) {
+            Log::setLogger(new LoggerCli(LogLevel::DEBUG));
+        }
+        else {
+            Log::setLogger(new LoggerCli(LogLevel::INFO));
+        }
         $shortopts = "";
         $shortopts .= "h"; // help message
         $shortopts .= "f"; // force transformation
@@ -63,14 +68,9 @@ class Cliglob
         $rest_index = null;
         self::putAll(getopt($shortopts, [], $rest_index));
         self::$globs = array_slice($argv, $rest_index);
+        if (isset(self::$globs)) return; 
         if (count(self::$globs) < 1) {
             exit(self::help());
-        }
-        if (isset(self::$options['v'])) {
-            Log::setLogger(new LoggerCli(LogLevel::DEBUG));
-        }
-        else {
-            Log::setLogger(new LoggerCli(LogLevel::INFO));
         }
     }
     
